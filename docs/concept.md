@@ -1,0 +1,14 @@
+## Why VectorQuarry Exists
+
+Contemporary Minecraft quarry mods have largely abandoned the foundational concept of physical mining - breaking blocks, moving materials, and respecting thermodynamic constraints - in favor of abstracted matter generation. This transition was not purely ideological; it was largely motivated by pragmatic limitations. The original *BuildCraft*-style quarries, while immersive and coherent within Minecraft's spatial metaphysics, imposed severe performance penalties when deployed at scale. Their design involved costly per-block operations, complex tile entity logic, and frequent world state updates that strained both the game engine and server tick budget.
+
+Over time, a design trend emerged: virtualized mining. Rather than excavating terrain, mods began to simulate resource acquisition through abstract filters, digital dimensions, or predefined block lists. This approach scales cleanly and avoids the performance penalties of traditional excavation - but at a cost. These systems scale easily and impose minimal computational cost, but at the expense of internal consistency. The gameplay metaphor shifts from machinery to magic: instead of excavating terrain, players instantiate matter from nowhere. For some, this abstraction is acceptable, even elegant. For others, it breaks the physical contract that makes Minecraft's spatial logic coherent. It removes the cost, friction, and spectacle of excavation - precisely the things that made it meaningful
+
+**VectorQuarry** rejects the false dichotomy between realism and performance. It preserves the mechanical and spatial realism of traditional quarry mechanics - blocks are broken, terrain is excavated, and machines operate visibly in the world - but implements these systems with modern performance engineering. By using batch-oriented logic, tight memory locality, and aggressive tick-coalescing, *VectorQuarry* can sustain:
+
+* **500 quarries** at **\~0.5ms/tick**
+* **5000 quarries** at **\~15ms/tick**
+
+These performance targets are achievable under the current execution model and have been validated in synthetic test harnesses. Not all runtime systems (e.g., dynamic sizing, item routing) are implemented yet, but the foundational architecture has demonstrated that such throughput is structurally viable. The mod is being developed with performance instrumentation as a core component, not an afterthought.
+
+**VectorQuarry** is not a nostalgic throwback or aesthetic clone. It is a systems-level response to a structural failure in the Minecraft modding ecosystem: the inability to reconcile physical realism with computational scalability. This mod exists to demonstrate that such reconciliation is not only possible -it offers a more coherent and extensible alternative to the dominant abstractionist models.

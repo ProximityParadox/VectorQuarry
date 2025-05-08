@@ -1,29 +1,38 @@
+# VectorQuarry
 
-Installation information
-=======
+**VectorQuarry** is a high-performance, block-breaking quarry mod for modern Minecraft versions, designed as a rigorous reimagining of the *BuildCraft* quarry ethos. Faithful to the principle of real physical excavation, yet engineered to scale across thousands of instances with minimal server overhead.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+VectorQuarry is an attempt to reconcile physical excavation with modern tick-scale performance -eschewing virtualization in favor of deterministic, server-friendly terrain manipulation.
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+VectorQuarry is under active development. It is not feature-complete, and the current repository is intended for developers, performance testers, and architecture reviewers, not end users. Most user-facing features (GUI, config UIs, intermod compatibility, redstone control, etc.) are incomplete or placeholder
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+Note: This repository does not contain runnable quarry logic. Critical internal systems (GSI, ISP) are withheld; runtime execution is structurally disabled.
 
-Mapping Names:
-============
-The MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+## Versioning Philosophy
 
-MDG Legacy:
-==========
-This template uses [ModDevGradle Legacy](https://github.com/neoforged/ModDevGradle). Documentation can be found [here](https://github.com/neoforged/ModDevGradle/blob/main/LEGACY.md).
+VectorQuarry does **not** currently adhere to semver or guarantee stability of public or internal APIs. All interfaces, configurations, and behavioral patterns are subject to change without notice.
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+However, one invariant *will not be relaxed*:
+
+> **Porting will never degrade core performance or system coherence.**
+
+If future Minecraft versions introduce breaking changes that would force performance regression, spatial inconsistency, or abstraction leakage, porting to that version will be suspended or canceled. Partial rewrites may be considered, but never at the cost of violating the mod's foundational constraints.
+
+Until a public API is formally released, all consumers should treat all systems as volatile and unsupported.
+
+## Repository Overview
+
+This repository is intended for architecture reviewers, profiling engineers, and contributors evaluating core design constraints. If you are here to:
+
+- **Understand the motivation behind the mod** - read `concept.md`
+- **Learn how core systems interrelate** - read `architecture.md`
+- **See what runtime logic is planned or scaffolded** - read `roadmap.md`
+- **Get definitions for internal terms and execution models** - read `glossary.md`
+- **Understand what contributions are allowed, when, and why** - read `contribution.md`
+- **Preview closed-system constraints and API exposure policy** - read `internal-api.md`
+- **Explore future upgrade mechanics and balancing invariants** - read `upgrades.md`
+
+Note: This codebase is intentionally incomplete. Subsystems like GSI (Global Suppression Index) and ISP (Immutable State Pool) are structurally required but not present in this repository. Without them, quarry logic will not run. To understand why please consult: `internal-api.md`
+
+We welcome critique and architectural feedback. Runtime testing, issue reports, and patches are not currently accepted.
+
