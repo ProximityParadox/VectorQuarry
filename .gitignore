@@ -1,0 +1,31 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+runs
+run-data
+
+repo
+
+#unfinished files - do not open source until the footguns are safe
+src/main/java/com/nicholasblue/quarrymod/ISP/
+src/main/java/com/nicholasblue/quarrymod/suppression/
+src/main/java/com/nicholasblue/quarrymod/client/
