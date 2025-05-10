@@ -1,12 +1,15 @@
 package com.nicholasblue.quarrymod.blockentity;
 
+import com.nicholasblue.quarrymod.capability.SQEnergy;
 import com.nicholasblue.quarrymod.data.QuarryBlockData;
 import com.nicholasblue.quarrymod.manager.CentralQuarryManager;
 import com.nicholasblue.quarrymod.menu.QuarryMenu;
+import com.nicholasblue.quarrymod.multiThreadedMadness.MultiThreadedCentralQuarryManager;
 import com.nicholasblue.quarrymod.registry.ModBlockEntities;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -18,6 +21,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 
@@ -42,6 +48,9 @@ public class QuarryBlockEntity extends BlockEntity implements MenuProvider {
         super(ModBlockEntities.QUARRY_BLOCK_ENTITY.get(), pos, state);
     }
 
+    private final SQEnergy energyStorage = new SQEnergy(100000, 1000, 0, 0); // Adjust as needed
+
+
     @Override
     public void onLoad() {
         if (level != null && !level.isClientSide && !isRegistered) {
@@ -65,6 +74,15 @@ public class QuarryBlockEntity extends BlockEntity implements MenuProvider {
         super.setRemoved();
     }
 
+    private final LazyOptional<SQEnergy> energyCapability = LazyOptional.of(() -> energyStorage);
+
+    @Override
+    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
+        if (cap == ForgeCapabilities.ENERGY) {
+            return energyCapability.cast();
+        }
+        return super.getCapability(cap, side);
+    }
 
 
     /* ───────── Configuration Logic ───────── */

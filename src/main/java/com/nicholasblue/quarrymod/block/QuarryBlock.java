@@ -46,20 +46,4 @@ public class QuarryBlock extends Block implements EntityBlock {
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
-/*    @Override
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level,
-                                                                  BlockState state,
-                                                                  BlockEntityType<T> type) {
-        return level.isClientSide ? null :
-                (type == ModBlockEntities.QUARRY_BLOCK_ENTITY.get()
-                        ? (BlockEntityTicker<T>) (BlockEntityTicker<QuarryBlockEntity>) QuarryBlockEntity::serverTick
-                        : null);
-    }*/
-
-
-
-
-
 }

@@ -36,6 +36,7 @@ public class QuarryMod {
     public static final SuppressionDiagnostics SUPPRESSION_DIAGNOSTICS = new SuppressionDiagnostics(GlobalSuppressionIndex.INSTANCE);
 
     public QuarryMod() {
+        System.out.println("Mixin config resource: " + QuarryMod.class.getClassLoader().getResource("mixin.quarrymod.json"));
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         ModBlocks.register();
         ModItems.register();

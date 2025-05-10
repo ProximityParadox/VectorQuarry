@@ -1,6 +1,11 @@
 {
-  "parent": "block/cube_all",
+  "parent": "block/cube",
   "textures": {
-    "all": "quarrymod:block/quarry_block"
+    "down": "quarrymod:block/qb_default",
+    "up": "quarrymod:block/qb_default",
+    "north": "quarrymod:block/qb_default",
+    "south": "quarrymod:block/qb_main",
+    "west": "quarrymod:block/qb_item_output",
+    "east": "quarrymod:block/qb_power_input"
   }
 }

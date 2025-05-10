@@ -1,5 +1,8 @@
 {
   "block.quarrymod.quarry_block": "Quarry",
   "item.quarrymod.quarry_block": "Quarry",
-  "itemGroup.quarrymod": "Quarry Mod"
+  "itemGroup.quarrymod": "Quarry Mod",
+  "item.quarrymod.upgrade1": "Upgrade Module 1",
+  "item.quarrymod.upgrade2": "Upgrade Module 2",
+  "item.quarrymod.upgrade3": "Upgrade Module 3"
 }

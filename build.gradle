@@ -59,6 +59,8 @@ legacyForge {
             systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
         }
 
+
+
         server {
             server()
             programArgument '--nogui'
@@ -119,6 +121,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 // "optional", meaning it will not be pulled by dependents of this mod.
 configurations {
     runtimeClasspath.extendsFrom localRuntime
+    testImplementation.extendsFrom runtimeClasspath
 }
 obfuscation {
     createRemappingConfiguration(configurations.localRuntime)
@@ -156,6 +159,12 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     // (Other dependencies can go here)
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+    testRuntimeOnly   'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+
+    implementation 'it.unimi.dsi:fastutil:8.5.12'
+    //testImplementation(sourceSets.main.get().compileClasspath)
 }
 
 // Enable and configure Mixin system
@@ -224,3 +233,23 @@ idea {
         downloadJavadoc = true
     }
 }
+
+def classpathFiles = configurations.compileClasspath.files
+
+tasks.register("printClasspath") {
+    doLast {
+        classpathFiles.each { file ->
+            println file.absolutePath
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+

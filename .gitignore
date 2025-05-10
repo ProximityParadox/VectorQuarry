@@ -29,3 +29,4 @@ repo
 src/main/java/com/nicholasblue/quarrymod/ISP/
 src/main/java/com/nicholasblue/quarrymod/suppression/
 src/main/java/com/nicholasblue/quarrymod/client/
+/src/test/

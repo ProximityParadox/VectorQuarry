@@ -43,8 +43,6 @@ public final class CentralQuarryManager {
     private final Long2ObjectOpenHashMap<QuarryRuntimeState> runtimeStates = new Long2ObjectOpenHashMap<>();
 
 
-
-
     /* ─────────────────────── Global registry (lock‑free) ───────────────────── */
 
     public void registerQuarry(QuarryBlockData data) {
@@ -59,7 +57,7 @@ public final class CentralQuarryManager {
 
         //System.out.printf("[CQM] Registering quarry: origin=%s, xSize=%d, zSize=%d, startY=%d\n", data.origin, data.xSize, data.zSize, data.startY);
 
-        GlobalSuppressionIndex.INSTANCE.addShellLayer(data.origin, data.xSize, data.zSize, data.startY);
+        GlobalSuppressionIndex.INSTANCE.addFullShellLayer(data.origin, data.xSize, data.zSize, data.startY);
     }
 
 
@@ -81,8 +79,6 @@ public final class CentralQuarryManager {
         }
     }
 
-
-
     /**
      * CAS‑swapped reference holding the current snapshot of <quarryId → state>.
      * The key is the block‑pos long for the Quarry block’s location.
@@ -96,14 +92,13 @@ public final class CentralQuarryManager {
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent evt) {
         if (evt.phase != TickEvent.Phase.END) return;  // run once per tick
+        int currentTick = (int) (evt.getServer().getTickCount() & 0x7FFFFFFF); // Clamp to 31 bits
+        ImmutableStatePool.INSTANCE.setCurrentTick(currentTick);
         INSTANCE.tickAll(evt.getServer().overworld()); // main world only
         ImmutableStatePool.INSTANCE.releaseAllThisTick(); // Finalize tick-local state
     }
 
     private void tickAll(ServerLevel level) {
-        int currentTick = (int) (level.getServer().getTickCount() & 0x7FFFFFFF); // Clamp to 31 bits
-        ImmutableStatePool.INSTANCE.setCurrentTick(currentTick);
-
         Long2ObjectOpenHashMap<QuarryBlockData> configSnapshot = registry.snapshot();
         long[] keys = configSnapshot.keySet().toLongArray();
         java.util.Arrays.sort(keys);
@@ -141,10 +136,10 @@ public final class CentralQuarryManager {
 
         // Check for layer completion
         if (dz >= config.zSize) {
-            int nextY = runtime.getCurrentY() - 1;
+            int currentY = runtime.getCurrentY();
+            int nextY = currentY - 1;
 
             if (nextY < level.getMinBuildHeight()) {
-                // Quarry is finished
                 int clampedY = Math.max(nextY, level.getMinBuildHeight());
 
                 GlobalSuppressionIndex.INSTANCE.removeShell(
@@ -152,19 +147,20 @@ public final class CentralQuarryManager {
                         clampedY, config.startY
                 );
 
-                runtime.stop(); // set running = false
+                runtime.stop();
             } else {
-                // Descend to next layer
+                // Perform batch suppression descent
+                GlobalSuppressionIndex.INSTANCE.descendShell(
+                        config.origin, config.xSize, config.zSize,
+                        currentY, nextY
+                );
+
                 runtime.setCurrentY(nextY);
                 runtime.resetProgress();
-
-                GlobalSuppressionIndex.INSTANCE.addShellLayer(
-                        config.origin, config.xSize, config.zSize,
-                        nextY
-                );
             }
             return;
         }
+
 
         // Compute mining target
         BlockPos.MutableBlockPos scratch = ImmutableStatePool.INSTANCE.unsafeMutablePos();
