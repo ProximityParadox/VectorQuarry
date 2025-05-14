@@ -1,7 +1,8 @@
 package com.nicholasblue.quarrymod.network;
 
 import com.nicholasblue.quarrymod.QuarryMod;
-import com.nicholasblue.quarrymod.suppression.GlobalSuppressionIndex;
+import com.nicholasblue.quarrymod.data.QuarryRuntimeState;
+import com.nicholasblue.quarrymod.manager.CentralQuarryManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,11 +12,10 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SuppressionNetwork {
+public class QuarryNetwork {
     private static final String PROTOCOL_VERSION = "1";
     private static final ResourceLocation CHANNEL_ID = new ResourceLocation("quarrymod", "suppression");
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
@@ -41,7 +41,34 @@ public class SuppressionNetwork {
                 SuppressionSnapshotRequestPacket::decode,
                 SuppressionSnapshotRequestPacket::handle
         );
-
+        CHANNEL.registerMessage(
+                nextId(),
+                QuarryItemBufferPacket.class,
+                QuarryItemBufferPacket::toBytes,
+                QuarryItemBufferPacket::new,
+                QuarryItemBufferPacket::handle
+        );
+        CHANNEL.registerMessage(
+                nextId(),
+                BlockIdMapPacket.class,
+                BlockIdMapPacket::encode,
+                BlockIdMapPacket::decode,
+                BlockIdMapPacket::handle
+        );
+        CHANNEL.registerMessage(
+                nextId(),
+                RequestBlockIndexPacket.class,
+                RequestBlockIndexPacket::toBytes,
+                RequestBlockIndexPacket::new,
+                RequestBlockIndexPacket::handle
+        );
+        CHANNEL.registerMessage(
+                nextId(),
+                RequestQuarryItemBufferPacket.class,
+                RequestQuarryItemBufferPacket::toBytes,
+                RequestQuarryItemBufferPacket::new,
+                RequestQuarryItemBufferPacket::handle
+        );
 
     }
 
@@ -53,6 +80,22 @@ public class SuppressionNetwork {
     public static void requestSnapshot() {
         CHANNEL.sendToServer(new SuppressionSnapshotRequestPacket());
     }
+
+    public static void SendItemSnapshot(BlockPos pos, ServerPlayer player){
+
+        QuarryRuntimeState runtime = CentralQuarryManager.INSTANCE.getRuntimeState(pos);
+
+        QuarryItemBufferPacket pkt = new QuarryItemBufferPacket(pos, runtime.getItemBuffer().getItemSummary(), runtime.getOverflowBuffer().getItemSummary());
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), pkt);
+
+    }
+
+    public static void sendBlockIdMap(ServerPlayer player, Map<Integer, ResourceLocation> idMap) {
+        System.out.println("sending block id map to client");
+        BlockIdMapPacket pkt = new BlockIdMapPacket(idMap);
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), pkt);
+    }
+
 
 
     public static void sendSnapshotToClient(ServerPlayer player) {
@@ -73,5 +116,14 @@ public class SuppressionNetwork {
         CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), pkt);
 
     }
+
+    public static void RequestItemSnapshot(BlockPos pos){
+        CHANNEL.sendToServer(new RequestQuarryItemBufferPacket(pos));
+    }
+
+    public static void sendBlockIndexRequest() {
+        CHANNEL.sendToServer(new RequestBlockIndexPacket());
+    }
+
 
 }

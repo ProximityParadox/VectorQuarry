@@ -1,5 +1,7 @@
 package com.nicholasblue.quarrymod.data;
 
+import com.nicholasblue.quarrymod.item.ItemBuffer;
+import com.nicholasblue.quarrymod.item.OverflowItemBuffer;
 import net.minecraft.nbt.CompoundTag;
 
 /**
@@ -17,11 +19,15 @@ public final class QuarryRuntimeState {
     private int currentY;
     private int progressCounter;
     private boolean running;
+    private final ItemBuffer ShortIditems;
+    private final OverflowItemBuffer intIdItems;
 
     public QuarryRuntimeState(int currentY, int progressCounter, boolean running) {
         this.currentY = currentY;
         this.progressCounter = progressCounter;
         this.running = running;
+        this.intIdItems = new OverflowItemBuffer();
+        this.ShortIditems = new ItemBuffer();
     }
 
     /* ───────── Accessors ───────── */
@@ -48,6 +54,14 @@ public final class QuarryRuntimeState {
 
     public void setRunning(boolean running) {
         this.running = running;
+    }
+
+    public ItemBuffer getItemBuffer(){
+        return ShortIditems;
+    }
+
+    public OverflowItemBuffer getOverflowBuffer() {
+        return intIdItems;
     }
 
     /* ───────── Helpers ───────── */

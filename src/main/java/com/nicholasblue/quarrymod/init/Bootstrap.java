@@ -12,6 +12,6 @@ import static com.nicholasblue.quarrymod.QuarryMod.MODID;
 public final class Bootstrap {
     @SubscribeEvent
     public static void onCommonSetup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(BlockIndexer::buildIndex);
+        event.enqueueWork(BlockIndexer::initalize);
     }
 }

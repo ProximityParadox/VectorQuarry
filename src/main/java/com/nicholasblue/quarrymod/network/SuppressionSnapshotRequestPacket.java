@@ -15,7 +15,7 @@ public class SuppressionSnapshotRequestPacket {
     public static void handle(SuppressionSnapshotRequestPacket pkt, Supplier<NetworkEvent.Context> ctx) {
         ServerPlayer player = ctx.get().getSender();
         if (player != null) {
-            SuppressionNetwork.sendSnapshotToClient(player);
+            QuarryNetwork.sendSnapshotToClient(player);
         }
         ctx.get().setPacketHandled(true);
     }

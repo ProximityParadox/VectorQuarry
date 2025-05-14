@@ -2,9 +2,10 @@ package com.nicholasblue.quarrymod;
 
 import com.mojang.logging.LogUtils;
 import com.nicholasblue.quarrymod.client.SuppressionDebugRenderer;
+import com.nicholasblue.quarrymod.data.BlockIndexer;
 import com.nicholasblue.quarrymod.item.ModItems;
 import com.nicholasblue.quarrymod.manager.SuppressionPersistenceManager;
-import com.nicholasblue.quarrymod.network.SuppressionNetwork;
+import com.nicholasblue.quarrymod.network.QuarryNetwork;
 import com.nicholasblue.quarrymod.registry.ModBlockEntities;
 import com.nicholasblue.quarrymod.registry.ModBlocks;
 import com.nicholasblue.quarrymod.registry.ModMenus;
@@ -13,10 +14,16 @@ import com.nicholasblue.quarrymod.suppression.GlobalSuppressionIndex;
 import com.nicholasblue.quarrymod.suppression.SuppressionDiagnostics;
 import com.nicholasblue.quarrymod.util.QuarryPlacementScheduler;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,6 +33,9 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Mod(QuarryMod.MODID)
 public class QuarryMod {
@@ -42,15 +52,10 @@ public class QuarryMod {
         ModItems.register();
         ModMenus.register();
         ModBlockEntities.register();
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modBus.addListener(this::onClientSetup);
-        SuppressionNetwork.init(); // <-- REGISTER PACKETS
+        QuarryNetwork.init(); // <-- REGISTER PACKETS
         MinecraftForge.EVENT_BUS.register(this);
 
 
-
-        // client-only hook
-        MinecraftForge.EVENT_BUS.addListener(this::clientSetup);
     }
 
     @SubscribeEvent
@@ -83,20 +88,35 @@ public class QuarryMod {
 
 
 
-
-
-
-    private void clientSetup(FMLClientSetupEvent evt) {
-        MenuScreens.register(ModMenus.QUARRY_MENU.get(), QuarryScreen::new);
+    @SubscribeEvent
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            System.out.println("player logged in, starting to send index via onplayerlogin");
+            Map<Integer, ResourceLocation> map = BlockIndexer.getCachedIdToResourceMap();
+            QuarryNetwork.sendBlockIdMap(player, map);
+        }
     }
+
+    @SubscribeEvent
+    public static void onEntityJoin(EntityJoinLevelEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        System.out.println("player logged in, starting to send index");
+
+        QuarryNetwork.sendBlockIdMap(player, BlockIndexer.getCachedIdToResourceMap());
+    }
+
+    @SubscribeEvent
+    public static void onClientLogin(ClientPlayerNetworkEvent.LoggingIn event) {
+        System.out.println("client joind server, sending request for index");
+        QuarryNetwork.sendBlockIndexRequest();
+    }
+
+
     public String getModid(){
         return MODID;
     }
-    private static final SuppressionDebugRenderer DEBUG_RENDERER = new SuppressionDebugRenderer();
-    public static SuppressionDebugRenderer getDebugRenderer() { return DEBUG_RENDERER; }
 
-    private void onClientSetup(FMLClientSetupEvent evt) {
-        MinecraftForge.EVENT_BUS.register(DEBUG_RENDERER);
-    }
+
+
 
 }

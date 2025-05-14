@@ -28,5 +28,5 @@ repo
 #unfinished files - do not open source until the footguns are safe
 src/main/java/com/nicholasblue/quarrymod/ISP/
 src/main/java/com/nicholasblue/quarrymod/suppression/
-src/main/java/com/nicholasblue/quarrymod/client/
+src/main/java/com/nicholasblue/quarrymod/client/SuppressionDebugRenderer.java
 /src/test/

@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * <p>Tracks configuration and activation state. All execution state is delegated to the
  * {@link CentralQuarryManager} once confirmed.</p>
  */
-public class QuarryBlockEntity extends BlockEntity implements MenuProvider {
+public class QuarryBlockEntity extends BlockEntity {
 
     /** Null ⇒ not yet configured (waiting for marker input). */
     @Nullable
@@ -65,6 +65,7 @@ public class QuarryBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
+    //233/68000
 
     @Override
     public void setRemoved() {
@@ -96,6 +97,8 @@ public class QuarryBlockEntity extends BlockEntity implements MenuProvider {
         setChanged();
     }
 
+
+
     /**
      * Called by GUI or player action to finalize and activate the quarry.
      * Transitions Phase 2 → 3.
@@ -109,7 +112,7 @@ public class QuarryBlockEntity extends BlockEntity implements MenuProvider {
                 pendingConfig.zSize()
         );
 
-        CentralQuarryManager.INSTANCE.registerQuarry(data);
+        MultiThreadedCentralQuarryManager.INSTANCE.registerQuarry(data);
         isRegistered = true;
         pendingConfig = null;
         setChanged();
@@ -154,18 +157,7 @@ public class QuarryBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
-    /* ───────── UI Interface ───────── */
 
-    @Override
-    public Component getDisplayName() {
-        return Component.translatable("block.quarrymod.quarry_block");
-    }
-
-    @Override
-    public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
-        return new QuarryMenu(id, inv,
-                new FriendlyByteBuf(Unpooled.buffer()).writeBlockPos(getBlockPos()));
-    }
 
     /* ───────── Config Data Record ───────── */
 

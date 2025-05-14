@@ -5,7 +5,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.nicholasblue.quarrymod.QuarryMod;
-import com.nicholasblue.quarrymod.network.SuppressionNetwork;
+import com.nicholasblue.quarrymod.QuarryModClient;
+import com.nicholasblue.quarrymod.network.QuarryNetwork;
 import com.nicholasblue.quarrymod.util.QuarryPlacementScheduler;
 import com.nicholasblue.quarrymod.util.RaycastUtil;
 import net.minecraft.commands.CommandSourceStack;
@@ -114,7 +115,7 @@ public final class SimpleQuarryCommand {
                                 return 0;
                             }
 
-                            int id = BlockIndexer.id(b);
+                            int id = BlockIndexer.getIntId(b);
                             ctx.getSource().sendSuccess(
                                     () -> Component.literal(
                                             rl + " → index " + id),
@@ -129,7 +130,7 @@ public final class SimpleQuarryCommand {
                 .then(Commands.argument("id", IntegerArgumentType.integer(0))
                         .executes(ctx -> {
                             int id = IntegerArgumentType.getInteger(ctx, "id");
-                            Block b = BlockIndexer.block(id);
+                            Block b = BlockIndexer.getBlockFromIntId(id);
 
                             if (b == null) {
                                 ctx.getSource().sendFailure(
@@ -166,7 +167,7 @@ public final class SimpleQuarryCommand {
                     }
 
                     Block block = player.level().getBlockState(hit.getBlockPos()).getBlock();
-                    Integer id  = BlockIndexer.id(block);
+                    Integer id  = BlockIndexer.getIntId(block);
 
                     if (id == 0 && block == Blocks.AIR) {          // example edge-case guard
                         ctx.getSource().sendFailure(
@@ -186,12 +187,12 @@ public final class SimpleQuarryCommand {
         return Commands.literal("VisualizeSuppression")
                 .executes(ctx -> {
 
-                    QuarryMod.getDebugRenderer().flipDebugRender();
+                    QuarryModClient.getDebugRenderer().flipDebugRender();
 
-                    if (QuarryMod.getDebugRenderer().isDebugEnabled()) {
+                    if (QuarryModClient.getDebugRenderer().isDebugEnabled()) {
                         // Request full sync
                         ServerPlayer player = ctx.getSource().getPlayerOrException();
-                        SuppressionNetwork.sendSnapshotToClient(player);
+                        QuarryNetwork.sendSnapshotToClient(player);
                     }
 
 

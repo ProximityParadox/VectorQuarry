@@ -1,6 +1,7 @@
 package com.nicholasblue.quarrymod.network;
 
 import com.nicholasblue.quarrymod.QuarryMod;
+import com.nicholasblue.quarrymod.QuarryModClient;
 import com.nicholasblue.quarrymod.client.SuppressionDebugRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.AABB;
@@ -50,7 +51,7 @@ public class SuppressionSnapshotPacket {
 
     public static void handle(SuppressionSnapshotPacket pkt, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            QuarryMod.getDebugRenderer().loadSnapshot(pkt.bounds, pkt.yLevels);
+            QuarryModClient.getDebugRenderer().loadSnapshot(pkt.bounds, pkt.yLevels);
         });
         ctx.get().setPacketHandled(true);
     }
