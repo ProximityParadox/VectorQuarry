@@ -1,5 +1,6 @@
 package com.nicholasblue.quarrymod.block;
 
+import com.nicholasblue.quarrymod.QuarryMod;
 import com.nicholasblue.quarrymod.blockentity.QuarryBlockEntity;
 import com.nicholasblue.quarrymod.data.BlockIndexer;
 import com.nicholasblue.quarrymod.data.QuarryRuntimeState;
@@ -86,6 +87,33 @@ public class QuarryBlock extends Block implements EntityBlock {
         return InteractionResult.SUCCESS;
     }
 
+    @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(state, level, pos, oldState, isMoving);
+        // Ensure this runs only for actual new placements, not just state changes of the same block
+        if (!level.isClientSide && !oldState.is(state.getBlock())) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof QuarryBlockEntity qbe) {
+                // Delegate the decision and action to the BE itself
+                qbe.handlePlacementConfiguration();
+            }
+        }
+    }
+    /**
+     * Called when this Block is removed from the world.
+     * @param pIsMoving True if the block is moving (e.g. pistons), false otherwise.
+     *                  We are interested in when it's NOT moving and actually being destroyed.
+     */
+    @Override
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        if (!pLevel.isClientSide && !pIsMoving && !pState.is(pNewState.getBlock())) {
+
+            CentralQuarryManager.INSTANCE.unregisterQuarry(pPos);
+            QuarryMod.LOGGER.info("QuarryBlock at {} was removed. Unregistering from CQM.", pPos);
+        }
+
+        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+    }
 
 
 }

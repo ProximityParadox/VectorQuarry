@@ -28,6 +28,22 @@ public class ModItems {
     public static final RegistryObject<Item> UPGRADE3 =
             ITEMS.register("upgrade3", () -> new Item(new Item.Properties()));
 
+    public static final RegistryObject<Item> DRILL_BIT_BLUE =
+            ITEMS.register("drill_bit_blue", () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> DRILL_BIT_GREEN =
+            ITEMS.register("drill_bit_green", () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> DRILL_BIT_RED =
+            ITEMS.register("drill_bit_red", () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> DRILL_BIT_OBI =
+            ITEMS.register("drill_bit_obi", () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> DRILL_BIT_NETH =
+            ITEMS.register("drill_bit_neth", () -> new Item(new Item.Properties()));
+
+
     public static void register() {
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(bus);
@@ -40,6 +56,11 @@ public class ModItems {
             evt.accept(UPGRADE1.get());
             evt.accept(UPGRADE2.get());
             evt.accept(UPGRADE3.get());
+            evt.accept(DRILL_BIT_BLUE.get());
+            evt.accept(DRILL_BIT_GREEN.get());
+            evt.accept(DRILL_BIT_RED.get());
+            evt.accept(DRILL_BIT_OBI.get());
+            evt.accept(DRILL_BIT_NETH.get());
         }
     }
 }

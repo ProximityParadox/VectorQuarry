@@ -13,7 +13,7 @@ public abstract class MixinBlockEntity {
 
     @Inject(method = "setChanged", at = @At("HEAD"), cancellable = true)
     private void suppressSetChanged(CallbackInfo ci) {
-        BlockEntity be = (BlockEntity) (Object) this;  // gaslight the compiler, assert dominance
+        BlockEntity be = (BlockEntity) (Object) this;
         BlockPos pos = be.getBlockPos();
         if (GlobalSuppressionIndex.INSTANCE.isSuppressed(pos)) {
             ci.cancel();

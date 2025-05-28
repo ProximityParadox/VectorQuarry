@@ -3,6 +3,7 @@ package com.nicholasblue.quarrymod.data;
 import com.nicholasblue.quarrymod.item.ItemBuffer;
 import com.nicholasblue.quarrymod.item.OverflowItemBuffer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 
 /**
  * Volatile, mutable execution state for a single running quarry.
@@ -85,6 +86,12 @@ public final class QuarryRuntimeState {
         tag.putInt("currentY", currentY);
         tag.putInt("progress", progressCounter);
         tag.putBoolean("running", running);
+
+
+        tag.put("ItemBuffer", ShortIditems.save());
+
+        tag.put("OverflowBuffer", intIdItems.save());
+
         return tag;
     }
 
@@ -92,6 +99,18 @@ public final class QuarryRuntimeState {
         int y = tag.getInt("currentY");
         int prog = tag.getInt("progress");
         boolean run = tag.getBoolean("running");
-        return new QuarryRuntimeState(y, prog, run);
+
+        QuarryRuntimeState state = new QuarryRuntimeState(y, prog, run);
+
+
+        if (tag.contains("ItemBuffer", Tag.TAG_LIST)) {
+            state.ShortIditems.load(tag.getList("ItemBuffer", Tag.TAG_COMPOUND));
+        }
+
+        if (tag.contains("OverflowBuffer", Tag.TAG_COMPOUND)) {
+            state.intIdItems.load(tag.getCompound("OverflowBuffer"));
+        }
+
+        return state;
     }
 }

@@ -7,6 +7,7 @@
   "mixins": [
     "MixinBlockEntity",
     "MixinBlockLightEngine",
+    "MixinChunkSkyLightSources_Update",
     "MixinLevel",
     "MixinLevelTicks",
     "MixinServerLevel",

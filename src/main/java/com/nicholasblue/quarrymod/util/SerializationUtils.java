@@ -19,6 +19,8 @@ public final class SerializationUtils {
 
     private SerializationUtils() {}
 
+    //todo: might also be obsolete - check later
+
     /* ───────────────────────── SuppressionSnapshot ↔ CompoundTag ───────────────────────── */
 
     public static CompoundTag serializeSuppressionSnapshot(SuppressionSnapshot snapshot) {
@@ -31,6 +33,7 @@ public final class SerializationUtils {
 
             CompoundTag chunkTag = new CompoundTag();
             chunkTag.putLong("pos", chunkKey);
+            chunkTag.putInt("sliceCount", cm.nonEmptySliceCount);
 
             ListTag sliceList = new ListTag();
             for (int y = 0; y < cm.slices.length; y++) {
@@ -62,6 +65,7 @@ public final class SerializationUtils {
             long chunkKey = chunkTag.getLong("pos");
 
             GlobalSuppressionIndex.ChunkMask cm = new GlobalSuppressionIndex.ChunkMask();
+            cm.nonEmptySliceCount = chunkTag.getInt("sliceCount"); // <-- LOAD THE COUNT
             ListTag sliceList = chunkTag.getList("slices", Tag.TAG_COMPOUND);
 
             for (Tag rawSlice : sliceList) {

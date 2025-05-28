@@ -26,7 +26,7 @@ modId="quarrymod" #mandatory
 version="1.0.0" #mandatory
 
 # A display name for the mod
-displayName="Simple Quarry" #mandatory
+displayName="Vector Quarry" #mandatory
 
 # A URL to query for updates for this mod. See the JSON update specification https://docs.neoforged.net/docs/misc/updatechecker/
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
@@ -44,7 +44,7 @@ displayName="Simple Quarry" #mandatory
 authors="NicholasBlue" #optional
 
 # The description text for the mod (multi line!) (#mandatory)
-description='''Missed buildcraft quarries? Hated the performance drain? Simple Quarry makes both simple fixes'''
+description='''Missed buildcraft quarries? Hated the performance drain? Vector Quarry makes both simple fixes'''
 
 [[mixins]]
 config = "mixin.quarrymod.json"

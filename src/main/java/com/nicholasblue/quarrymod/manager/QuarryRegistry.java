@@ -57,7 +57,6 @@ public final class QuarryRegistry {
         }
     }
 
-
     /**
      * Returns a snapshot of the current registry state.
      * The returned map is safe for iteration and inspection but must not be mutated.
@@ -72,5 +71,21 @@ public final class QuarryRegistry {
      */
     public void restore(Long2ObjectOpenHashMap<QuarryBlockData> restored) {
         stateRef.set(restored);
+    }
+
+    /**
+     * Atomically clears all entries from the registry.
+     */
+    public void clear() {
+        while (true) {
+            Long2ObjectOpenHashMap<QuarryBlockData> oldMap = stateRef.get();
+            if (oldMap.isEmpty()) {
+                return; // Already empty, nothing to do
+            }
+            if (stateRef.compareAndSet(oldMap, new Long2ObjectOpenHashMap<>())) {
+                return; // Successfully cleared
+            }
+            // If CAS failed, another thread modified it, so loop and retry
+        }
     }
 }

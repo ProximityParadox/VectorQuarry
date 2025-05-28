@@ -3,7 +3,10 @@ package com.nicholasblue.quarrymod;
 import com.mojang.logging.LogUtils;
 import com.nicholasblue.quarrymod.client.SuppressionDebugRenderer;
 import com.nicholasblue.quarrymod.data.BlockIndexer;
+import com.nicholasblue.quarrymod.data.QuarrySuppressionSavedData;
 import com.nicholasblue.quarrymod.item.ModItems;
+import com.nicholasblue.quarrymod.manager.CentralQuarryManager;
+import com.nicholasblue.quarrymod.manager.QuarryStatePersistenceManager;
 import com.nicholasblue.quarrymod.manager.SuppressionPersistenceManager;
 import com.nicholasblue.quarrymod.network.QuarryNetwork;
 import com.nicholasblue.quarrymod.registry.ModBlockEntities;
@@ -25,6 +28,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -40,7 +44,7 @@ import java.util.Map;
 @Mod(QuarryMod.MODID)
 public class QuarryMod {
     public static final String MODID = "quarrymod";
-    private static final int SUPPRESSION_SAVE_INTERVAL_TICKS = 1800; // 90 seconds
+    private static final int SUPPRESSION_SAVE_INTERVAL_TICKS = 180; // 9 seconds
     private static int suppressionSaveCountdown = SUPPRESSION_SAVE_INTERVAL_TICKS;
     public static final Logger LOGGER = LogUtils.getLogger(); // net.minecraftforge.fml.util
     public static final SuppressionDiagnostics SUPPRESSION_DIAGNOSTICS = new SuppressionDiagnostics(GlobalSuppressionIndex.INSTANCE);
@@ -62,28 +66,44 @@ public class QuarryMod {
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
 
-        // Example external tick call
         QuarryPlacementScheduler.tick();
 
-        // Correct way to get MinecraftServer
         MinecraftServer server = event.getServer();
 
-        // From server, get the overworld (or iterate all ServerLevels if needed)
         ServerLevel overworld = server.overworld();
 
-        // Perform the suppression save
-        if (--suppressionSaveCountdown <= 0) {
-            suppressionSaveCountdown = SUPPRESSION_SAVE_INTERVAL_TICKS;
-            SuppressionPersistenceManager.saveToFile(overworld);
-        }
     }
 
 
 
     @SubscribeEvent
     public void onWorldLoad(LevelEvent.Load event) {
-        if (!(event.getLevel() instanceof ServerLevel level)) return;
-        SuppressionPersistenceManager.loadFromFile(level);
+        if (event.getLevel() instanceof ServerLevel level) {
+            if (level.dimension() == ServerLevel.OVERWORLD) { // Or your relevant dimension
+                QuarryMod.LOGGER.info("Overworld loading. Initializing Quarry Suppression Data via SavedData system for level {}.", level.dimension().location());
+                QuarryStatePersistenceManager.loadQuarryStates(level, CentralQuarryManager.INSTANCE);
+
+                // This call to QuarrySuppressionSavedData.get() will trigger either
+                // loadAndInitializeGSI (if data exists) or createNewAndInitializeGSI (if not).
+                // In both cases, GSI will be appropriately populated or reset.
+                QuarrySuppressionSavedData.get(level);
+
+            }
+        }
+    }
+
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        LOGGER.info("Server stopping. Attempting to save Quarry Mod data.");
+        MinecraftServer server = event.getServer();
+        ServerLevel overworld = server.overworld(); // CQM operates based on overworld
+
+        if (overworld != null) {
+            //todo double check persistM for state and suppression. Think i unified them so they're both saveddata but different strategies.
+            QuarryStatePersistenceManager.saveQuarryStates(overworld, CentralQuarryManager.INSTANCE);
+
+        }
     }
 
 
