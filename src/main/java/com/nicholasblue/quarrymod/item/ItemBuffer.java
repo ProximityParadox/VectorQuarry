@@ -1,10 +1,9 @@
-// --- START OF ItemBuffer.java ---
 package com.nicholasblue.quarrymod.item;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag; // For NBT type constants
-// import com.nicholasblue.quarrymod.QuarryMod; // For logging if you add it
+import net.minecraft.nbt.Tag;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,7 +82,7 @@ public final class ItemBuffer {
             int index = existingIndex;
             if ((activeSlab.counts[index] & 0xFF) < 255) {
                 activeSlab.counts[index]++;
-                if (RESET_TIMER_ON_ADD) { // Your configured behavior
+                if (RESET_TIMER_ON_ADD) { 
                     activeSlab.expiryTicks[index] = currentTick + DEFAULT_EXPIRY_TICKS;
                 }
                 return;
@@ -182,7 +181,6 @@ public final class ItemBuffer {
         }
     }
 
-    // --- Other utility methods (getItemSummary, isEmpty, etc.) ---
     public Map<Short, Integer> getItemSummary() {
         Map<Short, Integer> summary = new HashMap<>();
         for (Slab slab : slabs) {
