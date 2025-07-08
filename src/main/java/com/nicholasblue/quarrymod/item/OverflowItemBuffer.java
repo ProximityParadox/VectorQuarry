@@ -34,13 +34,12 @@ public final class OverflowItemBuffer {
     }
 
     private final Int2ObjectOpenHashMap<List<OverflowEntry>> bufferMap = new Int2ObjectOpenHashMap<>();
-    private static final int DEFAULT_EXPIRY_TICKS = ItemBuffer.DEFAULT_EXPIRY_TICKS; // Ensure ItemBuffer.DEFAULT_EXPIRY_TICKS is accessible or copy value
-    private static final boolean RESET_TIMER_ON_ADD = ItemBuffer.RESET_TIMER_ON_ADD; // Ensure ItemBuffer.RESET_TIMER_ON_ADD is accessible or copy value
+    private static final int DEFAULT_EXPIRY_TICKS = ItemBuffer.DEFAULT_EXPIRY_TICKS; 
+    private static final boolean RESET_TIMER_ON_ADD = ItemBuffer.RESET_TIMER_ON_ADD; 
 
     public OverflowItemBuffer() {}
 
     public void add(int blockIntId, int currentTick) {
-        // Your original 'add' logic
         List<OverflowEntry> entries = bufferMap.get(blockIntId);
         if (entries == null) {
             entries = new ArrayList<>();
@@ -61,20 +60,15 @@ public final class OverflowItemBuffer {
         entries.add(newEntry);
     }
 
-    /**
-     * Original tick method: only cleans up empty lists from the map.
-     * No automatic expulsion of items.
-     */
     public void tick(int currentTick) {
-        // Correct FastUtil iteration for the map
         ObjectIterator<Int2ObjectMap.Entry<List<OverflowEntry>>> mapIterator = bufferMap.int2ObjectEntrySet().fastIterator();
         while (mapIterator.hasNext()) {
             Int2ObjectMap.Entry<List<OverflowEntry>> mapEntry = mapIterator.next();
-            List<OverflowEntry> entriesList = mapEntry.getValue(); // This is a standard ArrayList
+            List<OverflowEntry> entriesList = mapEntry.getValue(); 
 
 
             if (entriesList.isEmpty()) {
-                mapIterator.remove(); // Safe removal from FastUtil map
+                mapIterator.remove();
             }
         }
     }
@@ -149,7 +143,6 @@ public final class OverflowItemBuffer {
         }
     }
 
-    // --- Other utility methods (getItemSummary, isEmpty, etc.) ---
     public Map<Integer, Integer> getItemSummary() {
         Map<Integer, Integer> summary = new HashMap<>();
         for (Map.Entry<Integer, List<OverflowEntry>> entry : bufferMap.entrySet()) {
