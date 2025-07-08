@@ -1,12 +1,12 @@
 # VectorQuarry
 
+Note: This repository omits core runtime logic (e.g., suppression engine, internal state systems) by design, to prevent unsafe reuse and premature dependency binding. It is intended for architectural review, not execution or integration. Full systems are available upon request.
+
 **VectorQuarry** is a high-performance, block-breaking quarry mod for modern Minecraft versions, designed as a rigorous reimagining of the *BuildCraft* quarry ethos. Faithful to the principle of real physical excavation, yet engineered to scale across thousands of instances with minimal server overhead.
 
 VectorQuarry is an attempt to reconcile physical excavation with modern tick-scale performance -eschewing virtualization in favor of deterministic, server-friendly terrain manipulation.
 
 VectorQuarry is under active development. It is not feature-complete, and the current repository is intended for developers, performance testers, and architecture reviewers, not end users. Most user-facing features (GUI, config UIs, intermod compatibility, redstone control, etc.) are incomplete or placeholder
-
-Note: This repository does not contain runnable quarry logic. Critical internal systems (GSI, ISP) are withheld; runtime execution is structurally disabled.
 
 ## Versioning Philosophy
 
